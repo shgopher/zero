@@ -1,0 +1,29 @@
+# Copyright 2022 Lingfei Kong <colin404@foxmail.com>. All rights reserved.
+# Use of this source code is governed by a MIT style
+# license that can be found in the LICENSE file. The original repo for
+# this file is https://github.com/superproj/zero.
+#
+
+too.many.requests: 'too many requests, please try again later'
+data.not.change: 'data has not changed'
+duplicate.field: 'duplicate field'
+record.not.found: 'record not found'
+no.permission: 'no permission to access this resource'
+login.incorrect.password: 'incorrect password'
+login.same.password: 'same password'
+login.invalid.captcha: 'invalid captcha'
+login.failed: 'incorrect username or password'
+login.user.locked: 'user is locked'
+action.keep.least.one.action: 'keep at least one action'
+user.delete.yourself: 'you cannot delete yourself'
+jwt.token.missing: 'token is missing'
+jwt.token.invalid: 'token is invalid'
+jwt.token.expired: 'token has expired'
+jwt.token.parse.failed: 'failed to parse token'
+jwt.token.sign.failed: 'failed to sign token'
+jwt.wrong.signing.method: 'wrong signing method'
+idempotent.token.missing: 'idempotent token is missing'
+idempotent.token.invalid: 'idempotent token is invalid'
+user.list.unauthorized: 'only `admin` user can perform list operations'
+user.operation.forbidden: 'you are prohibited from manipulating other users'
+user.exists: "user already exists"

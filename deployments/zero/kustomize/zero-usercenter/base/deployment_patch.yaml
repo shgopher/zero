@@ -1,0 +1,56 @@
+# Copyright 2020 Lingfei Kong <colin404@foxmail.com>. All rights reserved.
+# Use of this source code is governed by a MIT style
+# license that can be found in the LICENSE file.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zero-usercenter # 资源名称
+spec:
+  template:
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - zero-usercenter
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+      containers:
+      - args:
+        - --config=/opt/zero/conf/zero-usercenter.yaml
+        image: "ccr.ccs.tencentyun.com/superproj/zero-usercenter-amd64:v1.0.0"
+        name: zero-usercenter
+        ports:
+        - containerPort: 50000
+          name: http-https
+          protocol: TCP
+        - containerPort: 50010
+          name: grpc
+          protocol: TCP
+        livenessProbe:
+          tcpSocket:
+            port: 50000
+        readinessProbe:
+          tcpSocket:
+            port: 50000
+        startupProbe:
+          tcpSocket:
+            port: 50000
+        volumeMounts:
+        - mountPath: /opt/zero/conf/zero-usercenter.yaml
+          name: zero-usercenter
+          subPath: zero-usercenter.yaml
+      volumes:
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: zero-usercenter.yaml
+            path: zero-usercenter.yaml
+          name: zero-usercenter
+        name: zero-usercenter

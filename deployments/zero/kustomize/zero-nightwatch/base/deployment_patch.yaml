@@ -1,0 +1,56 @@
+# Copyright 2020 Lingfei Kong <colin404@foxmail.com>. All rights reserved.
+# Use of this source code is governed by a MIT style
+# license that can be found in the LICENSE file.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zero-nightwatch # 资源名称
+spec:
+  template:
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - zero-nightwatch
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+      containers:
+      - args:
+        - --config=/opt/zero/conf/zero-nightwatch.yaml
+        image: "ccr.ccs.tencentyun.com/superproj/zero-nightwatch-amd64:v1.0.0"
+        name: zero-nightwatch
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            port: 8080
+            path: /healthz
+        readinessProbe:
+          httpGet:
+            port: 8080
+            path: /healthz
+        startupProbe:
+          httpGet:
+            port: 8080
+            path: /healthz
+        volumeMounts:
+        - mountPath: /opt/zero/conf/zero-nightwatch.yaml
+          name: zero-nightwatch
+          subPath: zero-nightwatch.yaml
+      volumes:
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: zero-nightwatch.yaml
+            path: zero-nightwatch.yaml
+          name: zero-nightwatch
+        name: zero-nightwatch

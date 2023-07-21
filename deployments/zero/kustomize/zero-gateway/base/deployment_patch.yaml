@@ -1,0 +1,56 @@
+# Copyright 2020 Lingfei Kong <colin404@foxmail.com>. All rights reserved.
+# Use of this source code is governed by a MIT style
+# license that can be found in the LICENSE file.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zero-gateway # 资源名称
+spec:
+  template:
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - zero-gateway
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+      containers:
+      - args:
+        - --config=/opt/zero/conf/zero-gateway.yaml
+        image: "ccr.ccs.tencentyun.com/superproj/zero-gateway-amd64:v1.0.0"
+        name: zero-gateway
+        ports:
+        - containerPort: 51000
+          name: http-https
+          protocol: TCP
+        - containerPort: 51010
+          name: grpc
+          protocol: TCP
+        livenessProbe:
+          tcpSocket:
+            port: 51000
+        readinessProbe:
+          tcpSocket:
+            port: 51000
+        startupProbe:
+          tcpSocket:
+            port: 51000
+        volumeMounts:
+        - mountPath: /opt/zero/conf/zero-gateway.yaml
+          name: zero-gateway
+          subPath: zero-gateway.yaml
+      volumes:
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: zero-gateway.yaml
+            path: zero-gateway.yaml
+          name: zero-gateway
+        name: zero-gateway

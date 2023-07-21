@@ -1,0 +1,31 @@
+// Copyright 2022 Lingfei Kong <colin404@foxmail.com>. All rights reserved.
+// Use of this source code is governed by a MIT style
+// license that can be found in the LICENSE file. The original repo for
+// this file is https://github.com/superproj/zero.
+//
+
+syntax = "proto3";
+
+package usercenter.v1;
+
+import "errors/errors.proto";
+
+option go_package = "github.com/superproj/zero/pkg/api/usercenter/v1;v1";
+option java_multiple_files = true;
+
+enum ErrorReason {
+  option (errors.default_code) = 500;
+
+  // user
+  UserLoginFailed = 0 [(errors.code) = 401];
+  UserAlreadyExists = 1 [(errors.code) = 409];
+  UserNotFound = 2 [(errors.code) = 404];
+  UserCreateFailed = 3 [(errors.code) = 541];
+  UserOperationForbidden = 4 [(errors.code) = 403];
+
+  // secret
+  // Secret reach the max count
+  SecretReachMaxCount= 5 [(errors.code) = 400];
+  SecretNotFound = 6 [(errors.code) = 404];
+  SecretCreateFailed = 7 [(errors.code) = 541];
+}

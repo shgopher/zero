@@ -1,0 +1,19 @@
+{
+  "CN": "zero",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "CN",
+      "ST": "Shenzhen",
+      "L": "Shenzhen",
+      "O": "zero",
+      "OU": "System"
+    }
+  ],
+  "ca": {
+    "expiry": "876000h"
+  }
+}

@@ -1,0 +1,217 @@
+set nocompatible              " 使用增强模式，必需
+filetype off                  " 必需
+
+" 设置运行时路径以包括 Vundle 并初始化
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+" 或者，传递一个路径，Vundle 应该在其中安装插件
+"call vundle#begin('~/some/path/here')
+
+" 让 Vundle 管理 Vundle，必需
+Plugin 'VundleVim/Vundle.vim'
+
+Plugin 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+
+Plugin 'preservim/nerdtree'
+
+" 以下是支持的不同格式的示例。
+" 在 vundle#begin/end 之间保留 Plugin 命令。
+" GitHub 仓库上的插件
+Plugin 'morhetz/gruvbox'
+
+" 在以下行之前必须添加所有插件
+call vundle#end()            " 必需
+filetype plugin indent on    " 必需
+
+syntax on " 显示语法高亮
+colorscheme gruvbox " 设置 Vim 主题
+
+" 常用配置
+set t_Co=256
+set background=dark " 设置默认背景颜色
+set noswapfile " 永久禁用交换文件
+set mouse=a " 激活鼠标使用
+set wrap " 自动换行
+set showmatch " 显示括号匹配
+set sw=4 " 设置软宽度
+set tabstop=4 " 设置 Tab 长度为 4 空格
+set shiftwidth=4 " 设置自动缩进长度为 4 空格
+set gdefault " 行内替换
+set expandtab " 使用空格来替换 Tab
+set autoindent " 继承前一行的缩进方式，适用于多行注释
+set autowrite " 自动保存
+set autoread " 文件在 Vim 之外修改过，自动重新读入
+set autochdir " 让 Vim 根据编辑的文件自动切换工作目录
+set nocompatible " 关闭 vi 兼容模式
+set nonumber " 关闭行号显示
+set visualbell " 禁止响铃
+set incsearch " 边输入边搜索（实时搜索）
+set hlsearch " 开启搜索结果的高亮显示
+set confirm " 在处理未保存或只读文件时，弹出确认
+set history=1000 " 设置历史记录步数
+set backspace=indent,eol,start " 更强大的退格功能
+set foldcolumn=0 " 关闭代码折叠线
+"set pastetoggle= " 粘贴代码保留缩进
+" set nobackup " 从不备份
+
+" 设置缩进对齐
+let g:indentLine_enabled = 1
+
+" Go 语言配置 ====> 开始
+" 覆盖 'omnifunc' 结果中的 icase 字段。默认情况下，它被设置为 0。
+let go_code_completion_icase = 1
+
+
+" 自动显示光标下单词的类型信息。光标变化时，类型信息将自动更新。默认情况下禁用。可以通过 'g:go_updatetime' 设置延迟时间。
+let g:go_auto_type_info = 0
+
+let go_imports_mode = "goimports"
+
+" 当使用不支持的 Vim 版本时（支持的版本：Vim 版本大于7.4.1689或者Neovim），开启警告。默认开启。
+let g:go_version_warning = 1
+" 开启 'omnifunc' 代码自动补全。默认开启。
+let g:go_code_completion_enabled = 1
+let g:go_auto_type_info = 1
+" 保存时执行 gofmt 格式化代码。默认开启。
+let g:go_fmt_autosave = 1
+" 保存时自动删除无用的包，添加缺失的包。
+let g:go_imports_autosave = 1
+" 保存时自动格式化 go.mod 文件。
+let g:go_mod_fmt_autosave = 1
+" 格式化代码时简化代码。
+let g:go_fmt_options = {
+     'gofmt': '-s',
+     }
+" 指定格式化代码时使用的命令，可选命令：gofmt, goimports, gopls。
+let g:go_fmt_command = "goimports"
+" 当格式化失败时，不报错。
+let g:go_fmt_fail_silently = 1
+" 开启 gofmt 实验模式。
+let g:go_fmt_experimental = 1
+" 键入 shift-k 时，在另一个窗口显示光标下单词的 godoc。
+let g:go_doc_keywordprg_enabled = 1
+" 使用浮动窗口显示单词的 godoc 信息。
+let g:go_doc_popup_window = 1
+" GoDoc 窗口的最大高度。默认为 20。
+let g:go_doc_max_height = 20
+" 在气球中显示 GoDoc。
+let g:go_doc_balloon = 0
+" 定义用于 |:GoFillStruct| 的命令。默认为 `fillstruct`。有效值为 `fillstruct` 和 `gopls`。默认为 `fillstruct`。
+let g:go_fillstruct_mode = 'fillstruct'
+" 定义用于 |:GoReferrers| 的命令。默认为 `gopls`，因为它是最快的，并且适用于 Go 模块。有效选项为 `gopls` 和 `guru`。默认为 `gopls`。
+let g:go_referrers_mode = 'gopls'
+" 定义用于 |:GoImplements| 的命令。gopls 中的 Implements 功能仍在开发中。有效选项为 `gopls` 和 `guru`。默认为 `gopls`。
+let g:go_implements_mode = 'gopls'
+" :GoDef 所执行的命令。可选项为 godef、gopls 和 guru。默认为 gopls，因为它很快。
+let g:go_def_mode = 'gopls'
+" 是否可以使用 gopls。默认为可以。
+let g:go_gopls_enabled = 1
+" 使用此选项跳转到 `:GoDef`、`:GoDefType` 和引起分割的映射变体的现有缓冲区。默认禁用。
+let g:go_def_reuse_buffer = 1
+" 传递给 gopls 的命令行参数。默认为 `['-remote=auto']`。
+let g:go_gopls_options = ['-remote=auto']
+" 指定 `gopls` 是否应包括未导入包的建议。
+" 当为 `v:null` 时，将使用 `gopls` 的默认值。默认为 `v:null`。
+let g:go_gopls_complete_unimported = v:null
+" 指定 `gopls` 是否应使用深度补全。
+" 当为 `v:null` 时，将使用 `gopls` 的默认值。默认为 `v:null`。
+let g:go_gopls_deep_completion = v:null
+" 指定 `gopls` 的补全匹配方式。
+" 有效值为 `v:null`、`fuzzy` 和 `caseSensitive`。当为 `v:null` 时，将使用 `gopls` 的默认值。默认为 `v:null`。
+let g:go_gopls_matcher = v:null
+" 开启默认的按键绑定
+" CTRL-], <C-LeftMouse>, g<C-LeftMouse> and (`gd`) 绑定到 :GoDef
+" CTRL-t 绑定到 :GoDefPop.
+let g:go_def_mapping_enabled = 1
+" 高亮`<-`周围的空白符，这些空格不符合Go代码规范
+let g:go_highlight_chan_whitespace_error = 0
+let g:go_template_autocreate = 1
+let g:go_autodetect_gopath = 1
+" 执行`:GoAddTags`时tag名字格式，这里设置为驼峰格式
+let g:go_addtags_transform = 'camelcase'
+
+" 高亮函数和方法
+let g:go_highlight_function_parameters = 1
+let g:go_highlight_diagnostic_errors = 1
+let g:go_highlight_diagnostic_warnings = 1
+let g:go_highlight_string_spellcheck = 1
+let g:go_highlight_format_strings = 1
+let g:go_highlight_function_calls = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_build_constraints = 1
+let g:go_highlight_types = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_generate_tags = 1
+let g:go_highlight_trailing_whitespace_error = 1
+let g:go_highlight_array_whitespace_error = 1
+let g:go_highlight_extra_types = 1
+let g:go_highlight_space_tab_error = 1
+let g:go_highlight_operators = 1
+" let g:go_highlight_functions = 1
+" let g:go_highlight_variable_declarations = 1
+" let g:go_highlight_variable_assignments = 1
+
+" 标签操作
+ca tn tabnew
+ca tc tabclose
+ca ts tabs
+
+" Vim 按键绑定
+map <2-LeftMouse> :GoDef <CR>
+map <RightMouse> :GoDefPop <CR>
+map <CR> :GoDef <CR>
+map <C-I> :GoDefPop <CR>
+map <S-K> :GoDoc <CR>
+map <S-L> :GoIfErr <CR>
+map <S-T> :GoDefType <CR>
+map <S-M> :GoInfo <CR>
+map <S-H> :GoSameIdsToggle <CR>
+map <S-P> :GoImplements<cr>
+map <S-R> :GoRename<cr>
+map <S-C> :GoCallers<cr>
+map <S-F> :GoFillStruct<cr>
+"map <S-L> :GoAddTag<cr>
+
+" Vim 按键解绑
+inoremap { {<CR>}<Esc>ko
+
+augroup go
+  autocmd!
+
+  " Show by default 4 spaces for a tab
+  autocmd BufNewFile,BufRead *.go setlocal noexpandtab tabstop=4 shiftwidth=4
+
+  " :GoBuild and :GoTestCompile
+  "autocmd FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
+
+  " :GoTest
+  autocmd FileType go nmap <leader>t  <Plug>(go-test)
+
+  " :GoRun
+  "autocmd FileType go nmap <leader>r  <Plug>(go-run)
+
+  " :GoDoc
+  autocmd FileType go nmap <Leader>d <Plug>(go-doc)
+
+  " :GoCoverageToggle
+  autocmd FileType go nmap <Leader>c <Plug>(go-coverage-toggle)
+
+  " :GoInfo
+  autocmd FileType go nmap <Leader>i <Plug>(go-info)
+
+  " :GoMetaLinter
+  autocmd FileType go nmap <Leader>l <Plug>(go-metalinter)
+
+  " :GoDef but opens in a vertical split
+  autocmd FileType go nmap <Leader>v <Plug>(go-def-vertical)
+  " :GoDef but opens in a horizontal split
+  autocmd FileType go nmap <Leader>s <Plug>(go-def-split)
+
+  " :GoAlternate  commands :A, :AV, :AS and :AT
+  autocmd Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
+  autocmd Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
+  autocmd Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
+  autocmd Filetype go command! -bang AT call go#alternate#Switch(<bang>0, 'tabe')
+  autocmd BufNewFile,BufFilePre,BufRead * set wrap
+augroup END

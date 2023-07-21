@@ -1,0 +1,109 @@
+# Copyright 2020 Lingfei Kong <colin404@foxmail.com>. All rights reserved.
+# Use of this source code is governed by a MIT style
+# license that can be found in the LICENSE file.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: zero-apiserver # 资源标签
+  name: zero-apiserver # 资源名称
+spec:
+  replicas: 1 # 副本数
+  progressDeadlineSeconds: 10
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: zero-apiserver
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: zero-apiserver
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - zero-apiserver
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+      containers:
+      - args:
+        - --secure-port=52010
+        - --bind-address=0.0.0.0
+        - --etcd-servers=127.0.0.1:2379
+        - --client-ca-file=/opt/zero/cert/ca.pem
+        - --tls-cert-file=/opt/zero/cert/zero-apiserver.pem 
+        - --tls-private-key-file=/opt/zero/cert/zero-apiserver-key.pem
+        -  --enable-admission-plugins=NamespaceAutoProvision,NamespaceExists,NamespaceLifecycle
+        - --v=10
+        image: "ccr.ccs.tencentyun.com/superproj/zero-apiserver-amd64:v1.0.0"
+        name: zero-apiserver
+        ports:
+        - containerPort: 52010
+          name: https
+          protocol: TCP
+        livenessProbe:
+          tcpSocket:
+            port: 52010
+          failureThreshold: 1
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 3
+        readinessProbe:
+          tcpSocket:
+            port: 52010
+          failureThreshold: 1
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 3
+        startupProbe:
+          tcpSocket:
+            port: 52010
+          failureThreshold: 10
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 3
+        resources:
+            limits:
+              cpu: 250m
+              memory: 512Mi
+            requests:
+              cpu: 250m
+              memory: 512Mi
+        imagePullPolicy: IfNotPresent
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /opt/zero/cert
+          name: zero-tls
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+      terminationGracePeriodSeconds: 5
+      volumes:
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: zero-apiserver.yaml
+            path: zero-apiserver.yaml
+          name: zero-apiserver
+        name: zero-apiserver
+      - secret:
+          defaultMode: 420
+          secretName: zero-tls
+        name: zero-tls

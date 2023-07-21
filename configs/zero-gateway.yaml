@@ -1,0 +1,45 @@
+# Copyright 2022 Lingfei Kong <colin404@foxmail.com>. All rights reserved.
+# Use of this source code is governed by a MIT style
+# license that can be found in the LICENSE file. The original repo for
+# this file is https://github.com/superproj/zero.
+#
+
+# zero-gateway 服务配置文件
+
+kubeconfig: /opt/zero/conf/config
+http:
+  addr: 0.0.0.0:51000 # HTTP 服务监听地址
+grpc:
+  addr: 0.0.0.0:51010 # gRPC 服务监听地址
+tls:
+  use-tls: false # 是否启用 TLS
+  cert: /opt/zero/cert/zero-gateway.pem # TLS 证书路径
+  key: /opt/zero/cert/zero-gateway-key.pem # TLS 私钥路径
+db:
+  host: 127.0.0.1 # 数据库主机地址
+  username: zero # 数据库用户名
+  password: zero(#)666 # 数据库密码
+  database: zero # 数据库名称
+  log-level: 4 # 数据库日志级别，1 为最低，4 为最高
+etcd:
+  endpoints: 127.0.0.1:2379 # etcd 服务地址
+redis:
+  addr: 127.0.0.1:6379 
+  database: 0
+  password: zero(#)666
+usercenter:
+  server: zero-usercenter:9090 # zero-usercenter 服务地址
+  #server: 127.0.0.1:50010 # zero-usercenter 本地访问地址
+jaeger:
+  env: dev # Jaeger 环境
+  server: http://127.0.0.1:14268/api/traces # Jaeger 服务地址
+  service-name: zero-gateway # Jaeger 服务名称
+log:
+    level: debug # 日志级别，优先级从低到高依次为：debug, info, warn, error, dpanic, panic, fatal。
+    format: console # 支持的日志输出格式，目前支持 console 和 json 两种。console 其实就是 text 格式。
+    enable-color: true # 是否开启颜色输出，true: 是，false: 否
+    disable-caller: false # 是否开启 caller，如果开启会在日志中显示调用日志所在的文件、函数和行号
+    disable-stacktrace: false # 是否再 panic 及以上级别禁止打印堆栈信息
+    output-paths: [stdout] # 多个输出，逗号分开。stdout：标准输出，
+
+

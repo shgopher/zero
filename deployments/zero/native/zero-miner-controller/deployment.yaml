@@ -1,0 +1,132 @@
+# Copyright 2020 Lingfei Kong <colin404@foxmail.com>. All rights reserved.
+# Use of this source code is governed by a MIT style
+# license that can be found in the LICENSE file.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: zero-miner-controller # 资源标签
+  name: zero-miner-controller # 资源名称
+spec:
+  replicas: 1 # 副本数
+  progressDeadlineSeconds: 10
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: zero-miner-controller
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: zero-miner-controller
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - zero-miner-controller
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+      serviceAccountName: zero-miner-controller
+      automountServiceAccountToken: true
+      containers:
+      - args:
+        - --kubeconfig=/opt/zero/conf/config
+        - --provider-kubeconfig=/opt/zero/conf/config.kind
+        - --in-cluster=true
+        - --config=/opt/zero/conf/zero-miner-controller.yaml
+        - --v=10
+        image: "ccr.ccs.tencentyun.com/superproj/zero-miner-controller-amd64:v1.0.0"
+        name: zero-miner-controller
+        ports:
+        - containerPort: 20349
+          name: metrics
+          protocol: TCP
+        - containerPort: 20350
+          name: health
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 20350
+          failureThreshold: 1
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 20350
+          failureThreshold: 1
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 3
+        startupProbe:
+          httpGet:
+            path: /healthz
+            port: 20350
+          failureThreshold: 10
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 3
+        resources:
+            limits:
+              cpu: 250m
+              memory: 512Mi
+            requests:
+              cpu: 250m
+              memory: 512Mi
+        imagePullPolicy: IfNotPresent
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /opt/zero/conf/zero-miner-controller.yaml
+          name: zero-miner-controller
+          subPath: zero-miner-controller.yaml
+        - mountPath: /opt/zero/conf/config.kind
+          name: zero-miner-controller
+          subPath: config.kind
+        - mountPath: /opt/zero/conf/config
+          name: zero
+          subPath: config
+        - mountPath: /opt/zero/cert
+          name: zero-tls
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+      terminationGracePeriodSeconds: 5
+      volumes:
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: zero-miner-controller.yaml
+            path: zero-miner-controller.yaml
+          - key: config.kind
+            path: config.kind
+          name: zero-miner-controller
+        name: zero-miner-controller
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: config
+            path: config
+          name: zero
+        name: zero
+      - secret:
+          defaultMode: 420
+          secretName: zero-tls
+        name: zero-tls

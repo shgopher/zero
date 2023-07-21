@@ -1,0 +1,28 @@
+# Copyright 2020 Lingfei Kong <colin404@foxmail.com>. All rights reserved.
+# Use of this source code is governed by a MIT style
+# license that can be found in the LICENSE file.
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: zero-usercenter
+  name: zero-usercenter
+spec:
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 50000
+  - name: https
+    protocol: TCP
+    port: 8443
+    targetPort: 50000
+  - name: grpc
+    protocol: TCP
+    port: 9090
+    targetPort: 50010
+  selector:
+    app: zero-usercenter
+  sessionAffinity: None
+  type: ClusterIP

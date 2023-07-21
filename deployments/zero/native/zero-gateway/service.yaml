@@ -1,0 +1,28 @@
+# Copyright 2020 Lingfei Kong <colin404@foxmail.com>. All rights reserved.
+# Use of this source code is governed by a MIT style
+# license that can be found in the LICENSE file.
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: zero-gateway
+  name: zero-gateway
+spec:
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 51000
+  - name: https
+    protocol: TCP
+    port: 8443
+    targetPort: 51000
+  - name: grpc
+    protocol: TCP
+    port: 9090
+    targetPort: 51010
+  selector:
+    app: zero-gateway
+  sessionAffinity: None
+  type: ClusterIP

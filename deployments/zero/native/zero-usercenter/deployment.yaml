@@ -1,0 +1,108 @@
+# Copyright 2020 Lingfei Kong <colin404@foxmail.com>. All rights reserved.
+# Use of this source code is governed by a MIT style
+# license that can be found in the LICENSE file.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: zero-usercenter # 资源标签
+  name: zero-usercenter # 资源名称
+spec:
+  replicas: 1 # 副本数
+  progressDeadlineSeconds: 10
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: zero-usercenter
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: zero-usercenter
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - zero-usercenter
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+      containers:
+      - args:
+        - --config=/opt/zero/conf/zero-usercenter.yaml
+        image: "ccr.ccs.tencentyun.com/superproj/zero-usercenter-amd64:v1.0.0"
+        name: zero-usercenter
+        ports:
+        - containerPort: 50000
+          name: http-https
+          protocol: TCP
+        - containerPort: 50010
+          name: grpc
+          protocol: TCP
+        livenessProbe:
+          tcpSocket:
+            port: 50000
+          failureThreshold: 1
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 3
+        readinessProbe:
+          tcpSocket:
+            port: 50000
+          failureThreshold: 1
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 3
+        startupProbe:
+          tcpSocket:
+            port: 50000
+          failureThreshold: 10
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 3
+        resources:
+            limits:
+              cpu: 250m
+              memory: 512Mi
+            requests:
+              cpu: 250m
+              memory: 512Mi
+        imagePullPolicy: IfNotPresent
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /opt/zero/conf/zero-usercenter.yaml
+          name: zero-usercenter
+          subPath: zero-usercenter.yaml
+        - mountPath: /opt/zero/cert
+          name: zero-tls
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+      terminationGracePeriodSeconds: 5
+      volumes:
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: zero-usercenter.yaml
+            path: zero-usercenter.yaml
+          name: zero-usercenter
+        name: zero-usercenter
+      - secret:
+          defaultMode: 420
+          secretName: zero-tls
+        name: zero-tls

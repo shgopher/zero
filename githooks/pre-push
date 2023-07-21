@@ -1,0 +1,6 @@
+#!/bin/sh
+exit 0
+EXIT_STATUS=0
+make test || EXIT_STATUS=$?
+golangci-lint run || EXIT_STATUS=$?
+exit $EXIT_STATUS

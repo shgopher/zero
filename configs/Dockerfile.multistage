@@ -1,0 +1,25 @@
+FROM golang:1.19 AS builder
+
+LABEL maintainer="<colin404@foxmail.com>"
+
+ENV GOPROXY https://goproxy.cn/
+
+WORKDIR /opt/zero
+
+COPY go.mod ./go.mod
+RUN go mod tidy
+COPY . .
+RUN pwd && ls
+RUN make install.ci
+RUN make gen
+RUN make build BINS=zero-apiserver
+
+FROM BASE_IMAGE
+
+
+RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \ 
+      echo "Asia/Shanghai" > /etc/timezone
+
+COPY --from=builder zero-apiserver /opt/zero/bin/
+
+ENTRYPOINT ["/opt/zero/bin/zero-apiserver"]

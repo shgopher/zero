@@ -1,0 +1,26 @@
+// Copyright 2022 Lingfei Kong <colin404@foxmail.com>. All rights reserved.
+// Use of this source code is governed by a MIT style
+// license that can be found in the LICENSE file. The original repo for
+// this file is https://github.com/superproj/zero.
+//
+
+syntax = "proto3";
+
+package zerrors;
+
+import "errors/errors.proto";
+
+option go_package = "github.com/superproj/zero/pkg/api/zerrors;zerrors";
+option java_multiple_files = true;
+
+enum ErrorReason {
+  option (errors.default_code) = 500;
+
+  Unknown = 0 [(errors.code) = 500];
+  InvalidParameter = 1 [(errors.code) = 400];
+  NotFound = 2 [(errors.code) = 400];
+  Unauthorized = 3 [(errors.code) = 401];
+  Forbidden = 4 [(errors.code) = 403];
+  IdempotentMissingToken = 5 [(errors.code) = 400];
+  IdempotentTokenExpired = 6 [(errors.code) = 400];
+}
