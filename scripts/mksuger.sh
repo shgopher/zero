@@ -91,7 +91,7 @@ OPTIONS:
   -h, --help             usage information.
   -d, --deploy           whether to deploy component to kind cluster (build image and deploy).
   -i, --image            build image only.
-      --load             load docker image to kind cluster. Only work when `-i` options is specified.
+      --load             load docker image to kind cluster. Only work when \`-i\` options is specified.
   -v, --version          build or deploy version.
 
 Reprot bugs to <colin404@foxmail.com>.
