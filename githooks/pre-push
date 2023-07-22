@@ -1,6 +1,9 @@
-#!/bin/sh
-exit 0
-EXIT_STATUS=0
-make test || EXIT_STATUS=$?
-golangci-lint run || EXIT_STATUS=$?
-exit $EXIT_STATUS
+#!/bin/bash
+
+protected_branch='develop'
+current_branch=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
+
+if [ $protected_branch = $current_branch ];then
+    echo "${protected_branch} is a protected branch, create PR to merge"
+    exit 1 # push will not execute
+fi
