@@ -5,6 +5,17 @@
 
 #### What type of PR is this?
 
+<!--
+Add one of the following kinds:
+/kind bug
+/kind cleanup
+/kind documentation
+/kind feature
+
+Optionally add one or more of the following kinds if applicable:
+/kind api-change
+-->
+
 #### What this PR does / why we need it:
 
 #### Which issue(s) this PR fixes:
